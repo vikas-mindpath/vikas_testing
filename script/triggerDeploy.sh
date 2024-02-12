@@ -16,8 +16,8 @@ if [ -z "$environment" ] || [ -z "$releaseDate" ]; then
 fi
 
 # GitHub API details
-GITHUB_ORGANIZATION_NAME='aniruddh-214' #add your organization name here
-REPO='unit_test'    # add your repo name where you want to run the workflow
+GITHUB_ORGANIZATION_NAME='vikas-mindpath' #add your organization name here
+REPO='vikas_testing'    # add your repo name where you want to run the workflow
 GITHUB_TOKEN=${GITHUB_TOKEN}
 workflowFileName="trigger-deployment.yml"
 

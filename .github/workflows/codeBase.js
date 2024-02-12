@@ -92,4 +92,5 @@ module.exports = async ({
   const authorIdSlack = usersMapping[author] ?? "unknown";
   core.setOutput("AUTHOR_SLACK_ID", authorIdSlack);
   core.setOutput("CONTRIBUTORS_LIST", structuredMessage);
+  core.setOutput('REPOSITORY', `${repo}`);
 };
