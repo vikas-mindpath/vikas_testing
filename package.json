@@ -1,0 +1,32 @@
+{
+  "name": "unit_test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com-aniruddh-gupta:aniruddh-214/unit_test.git",
+  "author": "Aniruddh Gupta <aniruddh161680@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build ./tsconfig.build.json && resolve-tspaths --project ./tsconfig.build.json --out ./dist",
+    "start:dev": "ts-node -P ./tsconfig.build.json src/index",
+    "start:nodemon": "nodemon src/index.ts",
+    "deploy:staging": "script/triggerDeploy.sh staging",
+    "deploy:production": "script/triggerDeploy.sh production"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.16",
+    "nodemon": "^3.0.3",
+    "resolve-tspaths": "^0.8.17",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.2",
+    "express": "^4.18.2",
+    "tsconfig-paths": "^4.2.0"
+  }
+}

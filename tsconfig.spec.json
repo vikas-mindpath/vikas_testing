@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.build",
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "allowJs": true,
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    // We have to skip checking node modules type because new version of typescript causing type error in current typeorm and apollo version
+    "skipLibCheck": true
+  },
+  // "include": ["src/**/*.spec.*", "test/**/*", "script/**/*.spec.*"],
+  "exclude": []
+}

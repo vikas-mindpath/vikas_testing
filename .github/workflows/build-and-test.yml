@@ -1,0 +1,28 @@
+name: "Testing the GH-actions"
+
+on:
+  # pull_request:
+  #   branches: ['main']
+  push:
+    branches: ['deploy_production']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm i -g yarn
+
+      - name: Install Depedencies
+        run: yarn install
+
+      - name: "Build and Test"
+        run: yarn build
+        shell: bash
+
+

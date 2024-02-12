@@ -1,0 +1,49 @@
+name: Trigger Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: environment name (staging or production)
+        type: choice
+        required: true
+        options:
+          - staging
+          - production
+      releaseDate:
+        description: Date for when to schedule the deployment
+        required: true
+
+jobs:
+  create_pull_request_and_send_to_slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout to repository
+        uses: actions/checkout@v4
+
+      - name: Trigger staging deployment
+        if: ${{ github.event.inputs.environment == 'staging' }}
+        uses: ./.github/actions/trigger-deployment
+        with:
+          BASE: ${{ vars.STAGING_BRANCH_NAME }}
+          HEAD: ${{ vars.DEVLOPMENT_BRANCH_NAME }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          RELEASE_DATE: ${{ github.event.inputs.releaseDate }}
+          AUTHOR: ${{ github.actor }}
+          SLACK_GITHUB_USER_MAPPINGS_PATH: '.github/workflows/usersMapping.json'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+
+
+      - name: Trigger production deployment
+        if: ${{ github.event.inputs.environment == 'production' }}
+        uses: ./.github/actions/trigger-deployment
+        with:
+          BASE: ${{ vars.PRODUCTION_BRANCH_NAME }}
+          HEAD: ${{ vars.STAGING_BRANCH_NAME }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          RELEASE_DATE: ${{ github.event.inputs.releaseDate }}
+          AUTHOR: ${{ github.actor }}
+          SLACK_GITHUB_USER_MAPPINGS_PATH: '.github/workflows/usersMapping.json'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}

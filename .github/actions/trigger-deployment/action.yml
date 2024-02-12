@@ -1,0 +1,72 @@
+name: Create PR and send update to slack
+description: "This action will automate deployment process. It will create PR and send deployment message to slack channel"
+inputs:
+  BASE:
+    description: 'Base branch for the PR'
+    required: true
+  HEAD:
+    description: 'Head branch for the PR'
+    required: true
+  ENVIRONMENT:
+    description: 'Deployment environment staging or production'
+    required: true
+  RELEASE_DATE:
+    description: "Date and Time for schedule the deployment"
+    required: true
+  AUTHOR:
+    description: 'author who initiate this workflow'
+    required: true
+  SLACK_GITHUB_USER_MAPPINGS_PATH:
+    description: 'File path of slack github user mappings path mapping'
+  GITHUB_TOKEN:
+    description: 'GitHub Token for authentication'
+    required: true
+  SLACK_WEBHOOK_URL:
+    description: 'Slack Webhook URL for notifications on channel'
+    required: true
+
+outputs:
+  PR_URL:
+    description: 'The URL of the created PR'
+    value: ${{ steps.create_and_request_reviewers.outputs.PR_URL }}
+  CONTRIBUTORS_LIST:
+    description: 'A structured message for sending updates to Slack'
+    value: ${{ steps.create_and_request_reviewers.outputs.CONTRIBUTORS_LIST }}
+  AUTHOR_SLACK_ID:
+    description: 'Github author mapped id according to slack member id'
+    value: ${{ steps.create_and_request_reviewers.outputs.AUTHOR_SLACK_ID }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create PR and Request Reviewers
+      id: create_and_request_reviewers
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const script = require('trigger-deployment/codeBase.js');
+          const usersMapping = require('${{inputs.SLACK_GITHUB_USER_MAPPINGS_PATH}}');
+          await script({
+            author: '${{inputs.AUTHOR}}',
+            github,
+            core,
+            context,
+            usersMapping,
+            environment: '${{ inputs.ENVIRONMENT }}',
+            base: '${{ inputs.BASE }}',
+            head: '${{ inputs.HEAD }}'
+          });
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
+    - name: Notify Slack
+      if: ${{ success() }}
+      shell: bash
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.SLACK_WEBHOOK_URL }}
+        MESSAGE: ${{ steps.create_and_request_reviewers.outputs.CONTRIBUTORS_LIST }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"blocks": [{"type": "section","text": {"type": "mrkdwn","text": ":truck: *${{ inputs.ENVIRONMENT }} Deployment of `${{ context.repo.repo }}` on ${{github.event.inputs.RELEASE_DATE}}*\nPR for ${{inputs.BASE}} is <${{ steps.create_and_request_reviewers.outputs.PR_URL }}>\n:arrow_right: <${{ steps.create_and_request_reviewers.outputs.PR_URL }}/commits>\n\nTriggered by <@${{ steps.create_and_request_reviewers.outputs.AUTHOR_SLACK_ID }}>\n\nIf you wish to block the deployment, please :x: + comment + @mention in this Thread. \n\nProvide a :white_check_mark: to confirm approval.  If you do nothing, the default is to release the work.\n\n"}}, {"type": "context","elements": [{"type": "mrkdwn","text": "\n\n${{env.MESSAGE}}"}]}]}' $SLACK_WEBHOOK_URL
