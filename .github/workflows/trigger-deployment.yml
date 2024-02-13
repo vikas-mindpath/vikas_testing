@@ -18,6 +18,9 @@ jobs:
   create_pull_request_and_send_to_slack:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout to repository
+        uses: actions/checkout@v4
+
       - name: Trigger staging deployment
         if: ${{ github.event.inputs.environment == 'staging' }}
         uses: ./.github/actions/trigger-deployment
