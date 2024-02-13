@@ -26,6 +26,9 @@ inputs:
     required: true
 
 outputs:
+  REPOSITORY:
+    description: 'The repository where the PR is created'
+    value: ${{ steps.create_and_request_reviewers.outputs.REPOSITORY }}
   PR_URL:
     description: 'The URL of the created PR'
     value: ${{ steps.create_and_request_reviewers.outputs.PR_URL }}
@@ -47,7 +50,7 @@ runs:
       uses: actions/github-script@v7
       with:
         script: |
-          const script = require('trigger-deployment/codeBase.js');
+          const script = require('.github/workflows/codeBase.js');
           const usersMapping = require('${{inputs.SLACK_GITHUB_USER_MAPPINGS_PATH}}');
           await script({
             author: '${{inputs.AUTHOR}}',
@@ -69,4 +72,4 @@ runs:
         SLACK_WEBHOOK_URL: ${{ inputs.SLACK_WEBHOOK_URL }}
         MESSAGE: ${{ steps.create_and_request_reviewers.outputs.CONTRIBUTORS_LIST }}
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"blocks": [{"type": "section","text": {"type": "mrkdwn","text": ":truck: *${{ inputs.ENVIRONMENT }} Deployment of `${{ context.repo.repo }}` on ${{github.event.inputs.RELEASE_DATE}}*\nPR for ${{inputs.BASE}} is <${{ steps.create_and_request_reviewers.outputs.PR_URL }}>\n:arrow_right: <${{ steps.create_and_request_reviewers.outputs.PR_URL }}/commits>\n\nTriggered by <@${{ steps.create_and_request_reviewers.outputs.AUTHOR_SLACK_ID }}>\n\nIf you wish to block the deployment, please :x: + comment + @mention in this Thread. \n\nProvide a :white_check_mark: to confirm approval.  If you do nothing, the default is to release the work.\n\n"}}, {"type": "context","elements": [{"type": "mrkdwn","text": "\n\n${{env.MESSAGE}}"}]}]}' $SLACK_WEBHOOK_URL
+        curl -X POST -H 'Content-type: application/json' --data '{"blocks": [{"type": "section","text": {"type": "mrkdwn","text": ":truck: *The ${{ inputs.ENVIRONMENT }} deployment for `${{ steps.create_and_request_reviewers.outputs.REPOSITORY }}` is scheduled for ${{inputs.RELEASE_DATE}}*\nPR for ${{inputs.BASE}} is <${{ steps.create_and_request_reviewers.outputs.PR_URL }}>\n:arrow_right: <${{ steps.create_and_request_reviewers.outputs.PR_URL }}/commits>\n\nTriggered by <@${{ steps.create_and_request_reviewers.outputs.AUTHOR_SLACK_ID }}>\n\nIf you wish to block the deployment, please :x: + comment + @mention in this Thread. \n\nProvide a :white_check_mark: to confirm approval.  If you do nothing, the default is to release the work.\n\n"}}, {"type": "context","elements": [{"type": "mrkdwn","text": "\n\n${{env.MESSAGE}}"}]}]}' $SLACK_WEBHOOK_URL
