@@ -64,7 +64,7 @@ module.exports = async ({
   // Filter out the 'github-actions[bot]' and the PR author (if applicable)
   contributors = contributors.filter(
     (contributor) =>
-      contributor !== "github-actions[bot]" && contributor !== context.actor
+      contributor !== "github-actions[bot]"
   );
 
   // Request Reviewers, excluding the PR author
@@ -92,4 +92,5 @@ module.exports = async ({
   const authorIdSlack = usersMapping[author] ?? "unknown";
   core.setOutput("AUTHOR_SLACK_ID", authorIdSlack);
   core.setOutput("CONTRIBUTORS_LIST", structuredMessage);
+  core.setOutput('REPOSITORY', `${repo}`);
 };

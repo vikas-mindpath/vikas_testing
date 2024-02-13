@@ -32,7 +32,7 @@ jobs:
           AUTHOR: ${{ github.actor }}
           SLACK_GITHUB_USER_MAPPINGS_PATH: '.github/workflows/usersMapping.json'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 
       - name: Trigger production deployment
@@ -46,4 +46,4 @@ jobs:
           AUTHOR: ${{ github.actor }}
           SLACK_GITHUB_USER_MAPPINGS_PATH: '.github/workflows/usersMapping.json'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
